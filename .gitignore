@@ -18,8 +18,8 @@ dist-ssr
 
 # local env files
 *.local
-prisma/migrations
 prisma/*.db
+prisma/*.db-journal
 
 # Log files
 logs
