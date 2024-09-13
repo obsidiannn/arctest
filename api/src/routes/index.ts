@@ -1,13 +1,14 @@
-import middleware from '@blocklet/sdk/lib/middlewares';
 import { Router } from 'express';
 
+import { sysPubKey } from '../libs/wallet';
+
 const router = Router();
-
-router.use('/user', middleware.user(), (req, res) => res.json(req.user || {}));
-
-router.use('/data', (_, res) =>
+/**
+ * 获取系统公钥 及 系统address
+ */
+router.use('/sysPubKey', (_, res) =>
   res.json({
-    message: 'Hello Blocklet!',
+    data: sysPubKey(),
   }),
 );
 

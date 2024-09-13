@@ -155,3 +155,15 @@ After developing a blocklet, you may need to bundle it. Use `npm run bundle` com
 
 The code is licensed under the Apache 2.0 license found in the
 [LICENSE](LICENSE) file.
+
+
+
+# 初始化：
+* npx prisma generate 
+* npx prisma migrate dev
+
+```
+  // "simple-git-hooks": {
+  //   "pre-commit": "npx lint-staged"
+  // }
+```
