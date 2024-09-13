@@ -205,7 +205,7 @@ const ProfileScreen = () => {
           onClick={save}
           variant="ghost"
           maxWidth={'40xl'}
-          className="w-4/5 border bg-blue-400 mt-4 rounded-[20px] hover:shadow-[0_0_8px_8px_rgba(30,136,229,0.2)]">
+          className="w-4/5 border self-center bg-blue-400 mt-4 rounded-[20px] hover:shadow-[0_0_8px_8px_rgba(30,136,229,0.2)]">
           <Text className="text-gray-200"> 修改 </Text>
         </Button>
       </Box>

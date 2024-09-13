@@ -1,6 +1,8 @@
 import { createAxios } from '@blocklet/js-sdk';
 
 import storage from '../store/storage';
+import { IModel } from '../types/system';
+import eventSender from './event-sender';
 
 const api = createAxios({
   baseURL: window?.blocklet?.prefix || '/',
@@ -35,10 +37,14 @@ export const createInstance = (auth = true) => {
       return rep.data;
     },
     (err) => {
+      eventSender.sendToast({
+        type: IModel.Event.EventTypeEnum.TOAST,
+        title: err.response?.data?.msg ?? 'systemerror',
+        status: 'error',
+      });
       if (err.status === 401 || err.status === 403) {
         if (auth) {
           window.location.href = '/login';
-          alert('auth error');
         }
       }
       throw new Error(err.message);
