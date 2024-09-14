@@ -8,7 +8,7 @@
     "lint:fix": "npm run lint -- --fix",
     "start": "cross-env NODE_ENV=development nodemon api/dev.ts -w api",
     "clean": "node scripts/build-clean.mjs",
-    "bundle": "tsc --noEmit && npm run bundle:client && npm run bundle:api",
+    "bundle": "npm run clean && npm run bundle:client && npm run bundle:server",
     "bundle:client": "vite build",
     "bundle:api": "npm run clean && tsc -p tsconfig.api.json && blocklet bundle --compact --create-release",
     "deploy": "npm run bundle && blocklet deploy .blocklet/bundle",
