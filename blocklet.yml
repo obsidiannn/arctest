@@ -6,7 +6,7 @@ keywords:
   - react
 group: dapp
 did: z2qaCrWqPNqCnP6H1jvDDbbfCRPQNNnRXHz8x
-main: api/index.js
+main: api/dist/index.js
 author:
   name: sunjx
   email: raymooonn@gmail.com

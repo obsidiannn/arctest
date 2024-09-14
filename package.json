@@ -10,7 +10,7 @@
     "clean": "node scripts/build-clean.mjs",
     "bundle": "npm run clean && npm run bundle:client && npm run bundle:server",
     "bundle:client": "vite build",
-    "bundle:server": "blocklet bundle --compact --create-release",
+    "bundle:server": "npm run clean && tsc -p tsconfig.api.json && blocklet bundle --compact --create-release",
     "bundle:api": "npm run clean && tsc -p tsconfig.api.json && blocklet bundle --compact --create-release",
     "deploy": "npm run bundle && blocklet deploy .blocklet/bundle",
     "upload": "npm run bundle && blocklet upload .blocklet/release/blocklet.json",
