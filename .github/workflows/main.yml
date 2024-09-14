@@ -23,9 +23,6 @@ jobs:
         with:
           node-version: '20'
           cache: 'pnpm'
-      
-      - name: Init
-        run: make github-action-init
 
       - name: Blocklet workflow
         uses: blocklet/action-workflow@v1
