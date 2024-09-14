@@ -7,7 +7,6 @@ module.exports = {
     project: [join(__dirname, 'tsconfig.eslint.json'), join(__dirname, 'tsconfig.json')],
   },
   rules: {
-    'import/no-extraneous-dependencies': ['error', { devDependencies: true }],
     'prefer-destructuring': ['error', { object: false, array: false }],
     'react/function-component-definition': 'off',
     '@typescript-eslint/no-unused-vars': 'off',
@@ -23,5 +22,6 @@ module.exports = {
     'react/require-default-props': 'off',
     'consistent-return': 'off',
     'react-hooks/exhaustive-deps': 'off',
+    'import/no-extraneous-dependencies': 'off',
   },
 };
