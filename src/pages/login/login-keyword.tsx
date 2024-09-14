@@ -58,8 +58,15 @@ const KeywordLogin = () => {
               setToken(e.target.value);
             }}
           />
-          <Button className="bg-slate-500 text-white mt-4 self-center" onClick={keywordLogin}>
+          <Button className="bg-blue-500 text-white mt-4 self-center" onClick={keywordLogin}>
             Do login
+          </Button>
+          <Button
+            className="bg-slate-500 mt-4 text-white mt-4 self-center"
+            onClick={() => {
+              navigate('/login');
+            }}>
+            返回首页
           </Button>
         </div>
       </Box>

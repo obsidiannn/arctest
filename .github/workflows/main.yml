@@ -16,20 +16,17 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v3
-        with:
-          version: 9
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'pnpm'
+          cache: 'yarn'
 
       - name: Blocklet workflow
         uses: blocklet/action-workflow@v1
         with:
           skip-upload: false
           skip-deploy: false
-          bundle-command: pnpm bundle
+          bundle-command: yarn bundle
           store-endpoint: ${{ secrets.STORE_ENDPOINT }}
           store-access-token: ${{ secrets.STORE_ACCESS_TOKEN }}
           server-endpoint: ${{ secrets.SERVER_ENDPOINT }}
