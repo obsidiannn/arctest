@@ -1,5 +1,5 @@
 import { Box, Input, InputGroup, InputLeftAddon, Spinner } from '@chakra-ui/react';
-import React, { ChangeEvent, type, useCallback } from 'react';
+import React, { ChangeEvent, useCallback } from 'react';
 import { isAddress, zeroAddress } from 'viem';
 import { useEnsResolver } from 'wagmi';
 

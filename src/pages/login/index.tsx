@@ -1,5 +1,4 @@
 import { Box, Button, Flex, Heading } from '@chakra-ui/react';
-import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useRecoilState } from 'recoil';

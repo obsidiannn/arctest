@@ -3,7 +3,7 @@ import Crypto from 'crypto';
 import { FallbackProvider, JsonRpcProvider, ethers, hashMessage } from 'ethers';
 import { useMemo } from 'react';
 import type { Chain, Client, Transport } from 'viem';
-import { Config, type, useClient } from 'wagmi';
+import { Config, useClient } from 'wagmi';
 
 export function clientToProvider(client: Client<Transport, Chain>) {
   const { chain, transport } = client;

@@ -1,5 +1,5 @@
 import { CopyIcon } from '@chakra-ui/icons';
-import { BoxProps, Text, type, useClipboard } from '@chakra-ui/react';
+import { BoxProps, Text, useClipboard } from '@chakra-ui/react';
 import { ReactNode, useEffect } from 'react';
 
 import { useNotify } from '../../hooks';

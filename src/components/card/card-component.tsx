@@ -2,15 +2,13 @@ import './Card.module.css';
 
 import { Box, Button, Divider, Flex, Heading } from '@chakra-ui/react';
 import { useState } from 'react';
-import { useAccount, useBlock } from 'wagmi';
+import { useAccount } from 'wagmi';
 
 import { Address, Balance, BlockNumber, Chain as C1, SignCard, Status, TransferCard } from './components';
 
 const Card = () => {
   const [shown, setShown] = useState(false);
   const { isConnected } = useAccount();
-  const block = useBlock();
-
   const fetchTransactions = () => setShown(!shown);
 
   return (

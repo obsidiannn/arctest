@@ -1,6 +1,6 @@
 import { ToastPosition, useToast } from '@chakra-ui/react';
 import { StyleProps } from '@chakra-ui/system';
-import { ReactNode, type, useCallback } from 'react';
+import { ReactNode, useCallback } from 'react';
 
 interface NotifyProps {
   title: string;

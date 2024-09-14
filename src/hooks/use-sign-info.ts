@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Address, recoverMessageAddress, type } from 'viem';
+import { Address, recoverMessageAddress } from 'viem';
 import { useSignMessage } from 'wagmi';
 
 export function useSignInfo() {
