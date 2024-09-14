@@ -1,8 +1,9 @@
 import { Box, Button, Flex, Heading } from '@chakra-ui/react';
-import { useEffect, useState } from 'react';
+import { ConnectButton } from '@rainbow-me/rainbowkit';
+import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
-import { useAccount, useSignMessage } from 'wagmi';
+import { useAccount, useDisconnect, useSignMessage } from 'wagmi';
 
 import auth from '../../api/auth';
 import blockletLogo from '../../assets/blocklet.svg';
@@ -11,7 +12,7 @@ import { Footer } from '../../components/footer';
 import { computeDataHash } from '../../libs/ethers';
 import storage from '../../store/storage';
 import { CurrentAccount } from '../../store/sys-recoil';
-import { Account, SystemInfo, User } from '../../types/account';
+import { SystemInfo, User } from '../../types/account';
 
 /**
  * 钱包登录 page，支持多账户
@@ -21,40 +22,46 @@ import { Account, SystemInfo, User } from '../../types/account';
 const LoginPage = () => {
   const navigate = useNavigate();
   const { address } = useAccount();
+  const { disconnect } = useDisconnect();
   const [currentAccount, setCurrentAccount] = useRecoilState(CurrentAccount);
   const [sysInfo, setSysInfo] = useState<SystemInfo | null>(null);
   // 用于 wallet 签名
   const { signMessageAsync } = useSignMessage();
 
-  // 登录流程
-  const init = async (
-    systemInfo: SystemInfo | null,
-    walletAddress: string | null,
-    currentAccountBody: Account | null,
-  ) => {
-    if (!systemInfo) {
+  const initSystemInfo = async () => {
+    if (!sysInfo) {
       const res = await auth.getSysInfo();
       setSysInfo(res);
     }
-    console.log('sysInfo', systemInfo);
-    if (currentAccountBody) {
+  };
+
+  // 登录流程
+  const init = useCallback(async () => {
+    if (!sysInfo) {
+      console.log('error sy');
+      return;
+    }
+    console.log('login', currentAccount, address);
+
+    if (currentAccount) {
       navigate('/');
       return;
     }
-    if (systemInfo && walletAddress) {
+    if (sysInfo && address) {
       console.log('do login');
-      const data = computeDataHash(systemInfo.address);
-      if (walletAddress) {
-        const accountInfo = storage.getAccountInfo(walletAddress);
+      const data = computeDataHash(sysInfo.address);
+      if (address) {
+        const accountInfo = storage.getAccountInfo(address);
         if (accountInfo) {
           const res = await auth.loginOrRegiste({
             sign: accountInfo.sign,
             data: accountInfo.data,
-            address: walletAddress ?? '',
+            address: address ?? '',
           });
           if (res) {
             console.log('jump');
             setCurrentAccount({
+              loginMode: 'wallet',
               data,
               sign: accountInfo.sign,
               address: accountInfo.address,
@@ -64,31 +71,43 @@ const LoginPage = () => {
           }
           return;
         }
-        const sign = await signMessageAsync({
-          account: walletAddress as `0x${string}`,
-          message: data,
-        });
-        const res = await auth.loginOrRegiste({
-          sign: sign,
-          data: data,
-          address: walletAddress ?? '',
-        });
-        if (res) {
-          console.log('jump');
-          setCurrentAccount({
-            data,
-            sign,
-            address: walletAddress,
-            userInfo: { ...res } as User,
+        try {
+          const sign = await signMessageAsync({
+            account: address,
+            message: data,
           });
-          navigate('/');
+          const res = await auth.loginOrRegiste({
+            sign: sign,
+            data: data,
+            address: address ?? '',
+          });
+          if (res) {
+            console.log('jump');
+            setCurrentAccount({
+              loginMode: 'wallet',
+              data,
+              sign,
+              address,
+              userInfo: { ...res } as User,
+            });
+            navigate('/');
+          }
+        } catch (error) {
+          disconnect();
         }
       }
     }
-  };
+  }, [address, sysInfo, currentAccount]);
 
   useEffect(() => {
-    init(sysInfo, address ?? null, currentAccount);
+    console.log('init1');
+
+    initSystemInfo();
+  }, []);
+
+  useEffect(() => {
+    console.log('init2');
+    init();
   }, [address, sysInfo, currentAccount]);
 
   return (

@@ -22,7 +22,7 @@ import { CurrentAccount } from '../../store/sys-recoil';
 const Header = () => {
   const { isTablet } = useWindowSize();
   const setCurrentAccount = useSetRecoilState(CurrentAccount);
-  const { disconnect } = useDisconnect();
+  const { disconnectAsync } = useDisconnect();
   const { address } = useAccount();
   const navigate = useNavigate();
 
@@ -53,8 +53,9 @@ const Header = () => {
               </ChakraLink>
               <ChakraLink
                 onClick={() => {
-                  disconnect();
-                  setCurrentAccount(null);
+                  disconnectAsync().then(() => {
+                    setCurrentAccount(null);
+                  });
                 }}>
                 <MenuItem icon={<EmailIcon />}>Logout</MenuItem>
               </ChakraLink>

@@ -27,6 +27,7 @@ const KeywordLogin = () => {
           console.log('login by token', res);
           setCurrentAccount({
             ...(res as Account),
+            loginMode: 'token',
           });
           navigate('/');
         } else {

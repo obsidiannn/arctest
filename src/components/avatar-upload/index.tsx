@@ -103,12 +103,12 @@ const UploadAvatar = (props: { url: string; onChoosed: (v: any) => void; enableU
               inputRef?.current?.click();
             }
           }}
-          alt="点击上传"
+          alt={props.enableUpload ? '点击上传' : '暂无头像'}
+          textAlign={'center'}
           className="flex flex-col items-center justify-center border-1 border-gray-400"
           fontSize={12}
           backgroundColor={'gray'}
           borderRadius={64}
-          textStyle={''}
         />
         <input type="file" ref={inputRef} onChange={onChange} hidden />
         <CropperModal isOpen={visible} onClose={onClose} url={image} />

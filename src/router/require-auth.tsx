@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
 import { useAccount } from 'wagmi';
@@ -25,35 +25,48 @@ const RequireAuth = ({ children }: { children: any }) => {
   /**
    *  权限及登录校验
    */
-  const checkAuth = async (accountAddress: string | null, currentAccountVal: Account | null) => {
-    // 通过 token 登录的情况
-    if (!accountAddress && currentAccountVal) {
-      if (storage.getCurrentUser()) {
-        return;
-      }
-    }
+  const checkAuth = useCallback(async () => {
+    console.log('checkAuth: ', address, currentAccount);
 
-    if (!accountAddress) {
+    // 通过 token 登录的情况
+    // if (!address && currentAccount) {
+    //   if (currentAccount.loginMode === 'token') {
+    //     if (storage.getCurrentUser()) {
+    //       return;
+    //     }
+    //   }
+    // }
+
+    if (!address) {
+      if (currentAccount && currentAccount.loginMode === 'token') {
+        const current = storage.getCurrentUser();
+        if (current) {
+          return;
+        }
+      }
       setCurrentAccount(null);
       navigate('/login');
       return;
     }
 
-    if (currentAccountVal && accountAddress === currentAccountVal.address) {
+    if (currentAccount && address === currentAccount.address) {
       checkAuthedPath();
       return;
     }
 
     // 如果发生账号变更的逻辑
-    if (!currentAccountVal || accountAddress !== currentAccountVal.address) {
-      const accountInfo = storage.getAccountInfo(accountAddress);
+    if (!currentAccount || address !== currentAccount.address) {
+      console.log('change address', address);
+
+      const accountInfo = storage.getAccountInfo(address);
       if (accountInfo) {
         const res = await auth.getUserInfo();
         if (res) {
           setCurrentAccount({
+            loginMode: 'wallet',
             data: accountInfo.data,
             sign: accountInfo.sign,
-            address: accountAddress,
+            address: address,
             userInfo: res.userInfo as User,
           });
           checkAuthedPath();
@@ -64,10 +77,12 @@ const RequireAuth = ({ children }: { children: any }) => {
       navigate('/login');
       return;
     }
-  };
+  }, [address, currentAccount]);
 
   useEffect(() => {
-    checkAuth(address ?? null, currentAccount);
+    console.log('effect', address, currentAccount?.address);
+
+    checkAuth();
   }, [address, currentAccount]);
 
   return children;

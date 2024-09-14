@@ -3,10 +3,6 @@ import storage from '../store/storage';
 import { Account, User } from '../types/account';
 
 const getUserInfo = async () => {
-  const userInfo = storage.getCurrentUser();
-  if (userInfo) {
-    return userInfo;
-  }
   const res = await createInstance(true).get('/api/user/currentUser');
   if (res) {
     return res.data;

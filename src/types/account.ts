@@ -18,6 +18,7 @@ export interface Account {
   address: string;
   data: string;
   sign: string;
+  loginMode: 'wallet' | 'token';
   userInfo: User;
 }
 

@@ -10,6 +10,8 @@ import {
 } from '@chakra-ui/react';
 import { useRef } from 'react';
 
+import { useWindowSize } from '../../hooks';
+
 export interface AlertDialogProps {
   visible: boolean;
   title: string;
@@ -19,19 +21,19 @@ export interface AlertDialogProps {
 
 function ConfirmDialog(props: AlertDialogProps) {
   const cancelRef = useRef(null);
-
+  const { width, isMobile } = useWindowSize();
   return (
     <AlertDialog
       motionPreset="slideInBottom"
       leastDestructiveRef={cancelRef}
       onClose={() => {
-        props.onClose(true);
+        props.onClose(false);
       }}
       isOpen={props.visible}
       isCentered>
       <AlertDialogOverlay />
 
-      <AlertDialogContent>
+      <AlertDialogContent maxWidth={isMobile ? width - 40 : undefined}>
         <AlertDialogHeader>{props.title}</AlertDialogHeader>
         <AlertDialogCloseButton />
         <AlertDialogBody>{props.describe}</AlertDialogBody>
