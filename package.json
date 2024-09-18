@@ -44,6 +44,8 @@
     "@arcblock/did-auth-storage-nedb": "^1.7.1",
     "@blocklet/sdk": "^1.16.30",
     "@chakra-ui/icons": "^2.1.1",
+    "@chakra-ui/input": "^2.1.2",
+    "@chakra-ui/layout": "^2.3.1",
     "@chakra-ui/react": "^2.8.2",
     "@chakra-ui/system": "^2.6.2",
     "@emotion/react": "^11.13.3",
@@ -64,11 +66,16 @@
     "express": "^4.19.2",
     "express-async-errors": "^3.1.1",
     "framer-motion": "^11.5.4",
+    "graphql": "^16.9.0",
+    "graphql-http": "^1.22.1",
     "http-status-codes": "^2.3.0",
     "node-cache": "^5.1.2",
     "pinata": "^1.2.0",
     "postcss": "^8.4.45",
+    "react": "^18.2.0",
     "react-cropper": "^2.3.3",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.24.0",
     "recoil": "^0.7.7",
     "tailwindcss": "^3.4.11",
     "viem": "^2.21.6",
@@ -102,9 +109,6 @@
     "prettier": "^3.3.3",
     "prettier-plugin-import-sort": "^0.0.7",
     "prisma": "^5.19.1",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-router-dom": "^6.24.0",
     "rimraf": "^5.0.7",
     "simple-git-hooks": "^2.11.1",
     "supertest": "^7.0.0",
@@ -125,8 +129,5 @@
       "style": "module",
       "parser": "typescript"
     }
-  },
-  "simple-git-hooks": {
-    "pre-commit": "npx lint-staged"
   }
 }

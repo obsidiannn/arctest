@@ -1,12 +1,13 @@
 import { Button } from '@chakra-ui/react';
-import { ConnectButton } from '@rainbow-me/rainbowkit';
+import { AuthenticationStatus, ConnectButton } from '@rainbow-me/rainbowkit';
 import { useState } from 'react';
 
 import ConfirmDialog from '../dialog/alert-dialog';
 
 // 自定义 rainbow 登录按钮
-export const CustomConnectButton = () => {
+export const CustomConnectButton = (props: { onReady?: (account: string) => void }) => {
   const [visible, setVisible] = useState(false);
+
   return (
     <ConnectButton.Custom>
       {({ account, chain, openAccountModal, openChainModal, openConnectModal, authenticationStatus, mounted }) => {
@@ -16,6 +17,10 @@ export const CustomConnectButton = () => {
         const connected =
           ready && account && chain && (!authenticationStatus || authenticationStatus === 'authenticated');
 
+        console.log('authenticationStatus is ', account);
+        if (account && props.onReady) {
+          props.onReady(account.address);
+        }
         const doConfirm = () => {
           setVisible(true);
         };
@@ -78,8 +83,6 @@ export const CustomConnectButton = () => {
               onClose={(v) => {
                 setVisible(false);
                 if (v) {
-                  console.log(v);
-
                   openConnectModal();
                 }
               }}

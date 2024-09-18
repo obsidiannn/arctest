@@ -1,13 +1,16 @@
-import { Box, Button, Flex, Heading, Input, Text, useToast } from '@chakra-ui/react';
-import { useEffect, useState } from 'react';
+import { Box, Button, Flex, Heading, Input, Text } from '@chakra-ui/react';
+import { useState } from 'react';
 import { useRecoilState } from 'recoil';
 
 import auth from '../../api/auth';
 import UploadAvatar from '../../components/avatar-upload';
+import eventManager from '../../libs/event-manager';
 import { getFileService } from '../../libs/file';
 import validate from '../../libs/validate';
 import { CurrentAccount } from '../../store/sys-recoil';
 import { Account, User } from '../../types/account';
+import { IModel } from '../../types/system';
+import InputLine from './input-line';
 
 /**
  * 资料编辑页面
@@ -16,38 +19,36 @@ import { Account, User } from '../../types/account';
 const ProfileScreen = () => {
   const [currentAccount, setCurrentAccount] = useRecoilState<Account | null>(CurrentAccount);
   const [loading, setLoading] = useState(false);
-  const toast = useToast();
   const [userInfo, setUserInfo] = useState<User | null>(currentAccount?.userInfo ?? null);
 
-  useEffect(() => {
-    if (currentAccount?.userInfo) {
-      setUserInfo(currentAccount.userInfo);
+  const formValid = (): boolean => {
+    if (!userInfo) {
+      eventManager.emit('event_toast_key', {
+        type: IModel.Event.EventTypeEnum.TOAST,
+        title: 'valid data error',
+        status: 'error',
+      } as IModel.Event.EventToast);
+      return false;
     }
-  }, [currentAccount?.userInfo]);
+
+    if (userInfo.email && !validate.isEmail(userInfo.email)) {
+      eventManager.emit('event_toast_key', {
+        type: IModel.Event.EventTypeEnum.TOAST,
+        title: 'valid email error',
+        status: 'error',
+      } as IModel.Event.EventToast);
+      return false;
+    }
+    return true;
+  };
 
   const save = async () => {
+    const valid = formValid();
+    if (!valid) {
+      return;
+    }
     const fileService = getFileService();
-    if (fileService) {
-      if (!userInfo) {
-        toast({
-          title: '数据异常',
-          status: 'error',
-          duration: 5000,
-          isClosable: true,
-        });
-        return;
-      }
-
-      if (userInfo.email && !validate.isEmail(userInfo.email)) {
-        toast({
-          title: 'email格式错误',
-          status: 'error',
-          duration: 2000,
-          isClosable: true,
-        });
-        return;
-      }
-
+    if (fileService && userInfo) {
       try {
         setLoading(true);
         const param = {
@@ -69,19 +70,18 @@ const ProfileScreen = () => {
             ...currentAccount,
             userInfo: res,
           });
-          toast({
+          eventManager.emit('event_toast_key', {
+            type: IModel.Event.EventTypeEnum.TOAST,
             title: 'success',
             status: 'success',
-            duration: 5000,
-          });
+          } as IModel.Event.EventToast);
         }
       } catch (error) {
-        toast({
-          title: '数据异常',
+        eventManager.emit('event_toast_key', {
+          type: IModel.Event.EventTypeEnum.TOAST,
+          title: 'operation error',
           status: 'error',
-          duration: 5000,
-          isClosable: true,
-        });
+        } as IModel.Event.EventToast);
       } finally {
         setLoading(false);
       }
@@ -113,92 +113,64 @@ const ProfileScreen = () => {
             className="flex-nowrap text-nowrap w-auto"
             contentEditable={false}
             value={userInfo?.address ?? ''}
-            onChange={() => {}}
+            disabled
             type="textarea"
             placeholder="Enter message to sign"
           />
         </div>
 
-        <div className="flex flex-row items-center justify-center w-full mt-4">
-          <Text className="mr-4 text-1xl font-bold items-center">username:</Text>
-          <Input
-            className="flex-nowrap text-nowrap w-auto"
-            value={userInfo?.username ?? ''}
-            onChange={(e) => {
-              if (userInfo) {
-                setUserInfo({ ...userInfo, username: e.target.value });
-              }
-            }}
-            type="textarea"
-            placeholder="Enter message to sign"
-          />
-        </div>
+        <InputLine
+          title="username"
+          value={userInfo?.username ?? ''}
+          onChangeText={(val: string) => {
+            if (userInfo) {
+              setUserInfo({ ...userInfo, username: val });
+            }
+          }}
+        />
 
-        <div className="flex flex-row items-center justify-center w-full mt-4">
-          <Text className="mr-4 text-1xl font-bold items-center">nickname:</Text>
-          <Input
-            className="flex-nowrap text-nowrap w-auto"
-            value={userInfo?.nickname ?? ''}
-            onChange={(e) => {
-              if (userInfo) {
-                setUserInfo({ ...userInfo, nickname: e.target.value });
-              }
-            }}
-            type="textarea"
-            placeholder="Enter message to sign"
-          />
-        </div>
+        <InputLine
+          title="nickname"
+          value={userInfo?.nickname ?? ''}
+          onChangeText={(val: string) => {
+            if (userInfo) {
+              setUserInfo({ ...userInfo, nickname: val });
+            }
+          }}
+        />
 
-        <div className="flex flex-row items-center justify-center w-full mt-4">
-          <Text className="mr-4 text-1xl font-bold items-center">sign:</Text>
-          <Input
-            className="flex-nowrap text-nowrap w-auto"
-            value={userInfo?.sign ?? ''}
-            onChange={(e) => {
-              if (userInfo) {
-                setUserInfo({ ...userInfo, sign: e.target.value });
-              }
-            }}
-            type="text"
-            placeholder="Enter message to sign"
-          />
-        </div>
+        <InputLine
+          title="sign"
+          value={userInfo?.sign ?? ''}
+          onChangeText={(val: string) => {
+            if (userInfo) {
+              setUserInfo({ ...userInfo, sign: val });
+            }
+          }}
+        />
 
-        <div className="flex flex-row items-center justify-center w-full mt-4">
-          <Text className="mr-4 text-1xl font-bold items-center">mobile:</Text>
-          <Input
-            className="flex-nowrap text-nowrap w-auto"
-            value={userInfo?.mobile ?? ''}
-            onChange={(e) => {
-              if (userInfo) {
-                setUserInfo({
-                  ...userInfo,
-                  mobile: e.target.value.replace(/[^0-9]/g, ''),
-                });
-              }
-            }}
-            type="tel"
-            placeholder="Enter message to sign"
-          />
-        </div>
+        <InputLine
+          title="mobile"
+          value={userInfo?.mobile ?? ''}
+          onChangeText={(val: string) => {
+            if (userInfo) {
+              setUserInfo({
+                ...userInfo,
+                mobile: val.replace(/[^0-9]/g, ''),
+              });
+            }
+          }}
+        />
 
-        <div className="flex flex-row items-center justify-center w-full mt-4">
-          <Text className="mr-4 text-1xl font-bold items-center">email:</Text>
-          <Input
-            className="flex-nowrap text-nowrap w-auto"
-            value={userInfo?.email ?? ''}
-            onChange={(e) => {
-              if (userInfo) {
-                setUserInfo({
-                  ...userInfo,
-                  email: e.target.value,
-                });
-              }
-            }}
-            type="email"
-            placeholder="Enter message to sign"
-          />
-        </div>
+        <InputLine
+          title="email"
+          value={userInfo?.email ?? ''}
+          onChangeText={(val: string) => {
+            if (userInfo) {
+              setUserInfo({ ...userInfo, email: val });
+            }
+          }}
+        />
 
         <Button
           isLoading={loading}

@@ -1642,7 +1642,7 @@
     "@chakra-ui/react-use-safe-layout-effect" "2.1.0"
     "@chakra-ui/shared-utils" "2.0.5"
 
-"@chakra-ui/input@2.1.2":
+"@chakra-ui/input@^2.1.2", "@chakra-ui/input@2.1.2":
   version "2.1.2"
   resolved "https://registry.npmmirror.com/@chakra-ui/input/-/input-2.1.2.tgz"
   integrity sha512-GiBbb3EqAA8Ph43yGa6Mc+kUPjh4Spmxp1Pkelr8qtudpc3p2PJOOebLpd90mcqw8UePPa+l6YhhPtp6o0irhw==
@@ -1653,7 +1653,7 @@
     "@chakra-ui/react-context" "2.1.0"
     "@chakra-ui/shared-utils" "2.0.5"
 
-"@chakra-ui/layout@2.3.1":
+"@chakra-ui/layout@^2.3.1", "@chakra-ui/layout@2.3.1":
   version "2.3.1"
   resolved "https://registry.npmmirror.com/@chakra-ui/layout/-/layout-2.3.1.tgz"
   integrity sha512-nXuZ6WRbq0WdgnRgLw+QuxWAHuhDtVX8ElWqcTK+cSMFg/52eVP47czYBE5F35YhnoW2XBwfNoNgZ7+e8Z01Rg==
@@ -8500,6 +8500,16 @@ graphemer@^1.4.0:
   version "1.4.0"
   resolved "https://registry.npmmirror.com/graphemer/-/graphemer-1.4.0.tgz"
   integrity sha512-EtKwoO6kxCL9WO5xipiHTZlSzBm7WLT627TqC/uVRd0HKmq8NXyebnNYxDoBi7wt8eTWrUrKXCOVaFq9x1kgag==
+
+graphql-http@^1.22.1:
+  version "1.22.1"
+  resolved "https://registry.npmmirror.com/graphql-http/-/graphql-http-1.22.1.tgz"
+  integrity sha512-4Jor+LRbA7SfSaw7dfDUs2UBzvWg3cKrykfHRgKsOIvQaLuf+QOcG2t3Mx5N9GzSNJcuqMqJWz0ta5+BryEmXg==
+
+graphql@^16.9.0, "graphql@>=0.11 <=16":
+  version "16.9.0"
+  resolved "https://registry.npmmirror.com/graphql/-/graphql-16.9.0.tgz"
+  integrity sha512-GGTKBX4SD7Wdb8mqeDLni2oaRGYQWjWHGKPQ24ZMnUtKfcsVoiv4uX8+LJr1K6U5VW2Lu1BwJnj7uiori0YtRw==
 
 graphql@16.5.0:
   version "16.5.0"

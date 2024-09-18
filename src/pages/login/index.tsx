@@ -1,8 +1,7 @@
 import { Box, Button, Flex, Heading } from '@chakra-ui/react';
-import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
-import { useAccount, useDisconnect, useSignMessage } from 'wagmi';
+import { useAccount, useSignMessage } from 'wagmi';
 
 import auth from '../../api/auth';
 import blockletLogo from '../../assets/blocklet.svg';
@@ -11,7 +10,7 @@ import { Footer } from '../../components/footer';
 import { computeDataHash } from '../../libs/ethers';
 import storage from '../../store/storage';
 import { CurrentAccount } from '../../store/sys-recoil';
-import { SystemInfo, User } from '../../types/account';
+import { Account, User } from '../../types/account';
 
 /**
  * 钱包登录 page，支持多账户
@@ -21,93 +20,64 @@ import { SystemInfo, User } from '../../types/account';
 const LoginPage = () => {
   const navigate = useNavigate();
   const { address } = useAccount();
-  const { disconnect } = useDisconnect();
   const [currentAccount, setCurrentAccount] = useRecoilState(CurrentAccount);
-  const [sysInfo, setSysInfo] = useState<SystemInfo | null>(null);
   // 用于 wallet 签名
   const { signMessageAsync } = useSignMessage();
 
-  const initSystemInfo = async () => {
-    if (!sysInfo) {
-      const res = await auth.getSysInfo();
-      setSysInfo(res);
+  const relogin = async (accountInfo: Account): Promise<boolean> => {
+    const res = await auth.loginOrRegiste({
+      sign: accountInfo.sign,
+      data: accountInfo.data,
+      address: address ?? '',
+    });
+    if (res) {
+      console.log('jump');
+      setCurrentAccount({
+        loginMode: 'wallet',
+        data: accountInfo.data,
+        sign: accountInfo.sign,
+        address: accountInfo.address,
+        userInfo: { ...res } as User,
+      });
+      navigate('/');
+      return true;
     }
+    return false;
   };
 
-  // 登录流程
-  const init = useCallback(async () => {
-    if (!sysInfo) {
-      console.log('error sy');
-      return;
-    }
-    console.log('login', currentAccount, address);
-
-    if (currentAccount) {
+  const doLogin = async (walletAddress: string) => {
+    if (currentAccount && currentAccount.address === walletAddress) {
       navigate('/');
       return;
     }
-    if (sysInfo && address) {
-      console.log('do login');
-      const data = computeDataHash(sysInfo.address);
-      if (address) {
-        const accountInfo = storage.getAccountInfo(address);
-        if (accountInfo) {
-          const res = await auth.loginOrRegiste({
-            sign: accountInfo.sign,
-            data: accountInfo.data,
-            address: address ?? '',
-          });
-          if (res) {
-            console.log('jump');
-            setCurrentAccount({
-              loginMode: 'wallet',
-              data,
-              sign: accountInfo.sign,
-              address: accountInfo.address,
-              userInfo: { ...res } as User,
-            });
-            navigate('/');
-          }
-          return;
-        }
-        try {
-          const sign = await signMessageAsync({
-            account: address,
-            message: data,
-          });
-          const res = await auth.loginOrRegiste({
-            sign: sign,
-            data: data,
-            address: address ?? '',
-          });
-          if (res) {
-            console.log('jump');
-            setCurrentAccount({
-              loginMode: 'wallet',
-              data,
-              sign,
-              address,
-              userInfo: { ...res } as User,
-            });
-            navigate('/');
-          }
-        } catch (error) {
-          disconnect();
-        }
+    const data = computeDataHash(walletAddress);
+    const accountInfo = storage.getAccountInfo(walletAddress);
+    if (accountInfo) {
+      const isRelogin = await relogin(accountInfo);
+      if (isRelogin) {
+        return;
       }
     }
-  }, [address, sysInfo, currentAccount]);
-
-  useEffect(() => {
-    console.log('init1');
-
-    initSystemInfo();
-  }, []);
-
-  useEffect(() => {
-    console.log('init2');
-    init();
-  }, [address, sysInfo, currentAccount]);
+    const sign = await signMessageAsync({
+      account: walletAddress as `0x${string}`,
+      message: data,
+    });
+    const res = await auth.loginOrRegiste({
+      sign: sign,
+      data: data,
+      address: walletAddress ?? '',
+    });
+    if (res) {
+      setCurrentAccount({
+        loginMode: 'wallet',
+        data,
+        sign,
+        address: walletAddress,
+        userInfo: { ...res } as User,
+      });
+      navigate('/');
+    }
+  };
 
   return (
     <Flex flex={1} minHeight="100vh" className="flex flex-col items-center justify-center ">
@@ -122,7 +92,7 @@ const LoginPage = () => {
         </Heading>
         <div className="flex flex-col mt-12 items-center">
           {/* {!currentAccount ? <ConnectButton label='wallet connect' /> : null} */}
-          {!currentAccount ? <CustomConnectButton /> : null}
+          {!currentAccount ? <CustomConnectButton onReady={doLogin} /> : null}
           <Button
             type="button"
             className="m-5 rounded-xl"
@@ -138,5 +108,4 @@ const LoginPage = () => {
     </Flex>
   );
 };
-
 export default LoginPage;

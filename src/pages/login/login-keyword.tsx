@@ -36,6 +36,7 @@ const KeywordLogin = () => {
       });
     }
   };
+
   return (
     <Flex flex={1} minHeight="100vh" className="flex flex-col items-center justify-center ">
       <Box as="main" p={4} minWidth={300}>
@@ -66,7 +67,7 @@ const KeywordLogin = () => {
             onClick={() => {
               navigate('/login');
             }}>
-            返回首页
+            Jump to Login Page
           </Button>
         </div>
       </Box>

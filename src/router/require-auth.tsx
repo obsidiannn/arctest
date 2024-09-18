@@ -1,7 +1,7 @@
 import { useCallback, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
-import { useAccount } from 'wagmi';
+import { useAccount, useCall } from 'wagmi';
 
 import auth from '../api/auth';
 import storage from '../store/storage';
@@ -17,73 +17,62 @@ const RequireAuth = ({ children }: { children: any }) => {
   /**
    * 实际上不需要这里
    */
-  const checkAuthedPath = () => {
+  const checkAuthedPath = useCallback(() => {
     if (location.pathname === '/login' || location.pathname === '/keywordLogin') {
       navigate('/');
     }
-  };
-  /**
-   *  权限及登录校验
-   */
-  const checkAuth = useCallback(async () => {
-    console.log('checkAuth: ', address, currentAccount);
+  }, [location.pathname, navigate]);
 
-    // 通过 token 登录的情况
-    // if (!address && currentAccount) {
-    //   if (currentAccount.loginMode === 'token') {
-    //     if (storage.getCurrentUser()) {
-    //       return;
-    //     }
-    //   }
-    // }
-
-    if (!address) {
-      if (currentAccount && currentAccount.loginMode === 'token') {
-        const current = storage.getCurrentUser();
-        if (current) {
-          return;
-        }
-      }
-      setCurrentAccount(null);
-      navigate('/login');
-      return;
-    }
-
-    if (currentAccount && address === currentAccount.address) {
-      checkAuthedPath();
-      return;
-    }
-
-    // 如果发生账号变更的逻辑
-    if (!currentAccount || address !== currentAccount.address) {
-      console.log('change address', address);
-
-      const accountInfo = storage.getAccountInfo(address);
-      if (accountInfo) {
-        const res = await auth.getUserInfo();
-        if (res) {
-          setCurrentAccount({
-            loginMode: 'wallet',
-            data: accountInfo.data,
-            sign: accountInfo.sign,
-            address: address,
-            userInfo: res.userInfo as User,
-          });
-          checkAuthedPath();
-          return;
-        }
-      }
-      setCurrentAccount(null);
-      navigate('/login');
-      return;
-    }
-  }, [address, currentAccount]);
+  const jumpToLogin = useCallback(() => {
+    setCurrentAccount(null);
+    navigate('/login');
+  }, [setCurrentAccount, navigate]);
 
   useEffect(() => {
-    console.log('effect', address, currentAccount?.address);
+    const checkAuth = async () => {
+      console.log('checkAuth: ', address, currentAccount);
 
+      if (!address) {
+        if (currentAccount && currentAccount.loginMode === 'token') {
+          const current = storage.getCurrentUser();
+          if (current) {
+            return;
+          }
+        }
+        jumpToLogin();
+        return;
+      }
+
+      if (currentAccount && address === currentAccount.address) {
+        checkAuthedPath();
+        return;
+      }
+
+      // 如果发生账号变更的逻辑
+      if (!currentAccount || address !== currentAccount.address) {
+        console.log('change address', address);
+
+        const accountInfo = storage.getAccountInfo(address);
+        if (accountInfo) {
+          const res = await auth.getUserInfo();
+          if (res) {
+            setCurrentAccount({
+              loginMode: 'wallet',
+              data: accountInfo.data,
+              sign: accountInfo.sign,
+              address: address,
+              userInfo: res.userInfo as User,
+            });
+            checkAuthedPath();
+            return;
+          }
+        }
+        jumpToLogin();
+        return;
+      }
+    };
     checkAuth();
-  }, [address, currentAccount]);
+  }, [address, currentAccount?.address, checkAuthedPath, jumpToLogin, currentAccount, setCurrentAccount]);
 
   return children;
 };

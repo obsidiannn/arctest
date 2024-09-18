@@ -21,7 +21,5 @@ module.exports = {
     'import/prefer-default-export': 'off',
     'react/require-default-props': 'off',
     'consistent-return': 'off',
-    'react-hooks/exhaustive-deps': 'off',
-    'import/no-extraneous-dependencies': 'off',
   },
 };

@@ -6,11 +6,11 @@ import Cropper, { ReactCropperElement } from 'react-cropper';
 
 import { getFileService } from '../../libs/file';
 
-const CropperModal = (props: { isOpen: boolean; onClose: (url: string | null) => void; url: string }) => {
+const CropperModal = (props: { isOpen: boolean; onClose?: (url: string | null) => void; url: string }) => {
   const cropperRef = createRef<ReactCropperElement>();
 
   const getCropData = () => {
-    if (typeof cropperRef.current?.cropper !== 'undefined') {
+    if (typeof cropperRef.current?.cropper !== 'undefined' && props.onClose) {
       const result = cropperRef.current?.cropper.getCroppedCanvas().toDataURL();
       props.onClose(result);
     }
@@ -20,7 +20,9 @@ const CropperModal = (props: { isOpen: boolean; onClose: (url: string | null) =>
     <Modal
       isOpen={props.isOpen}
       onClose={() => {
-        props.onClose(null);
+        if (props.onClose) {
+          props.onClose(null);
+        }
       }}>
       <ModalOverlay />
       <ModalContent className="flex flex-col">
@@ -45,7 +47,7 @@ const CropperModal = (props: { isOpen: boolean; onClose: (url: string | null) =>
             <Button onClick={getCropData} className="mr-2" type="button">
               confirm
             </Button>
-            <Button onClick={() => props.onClose(null)}>cancel</Button>
+            <Button onClick={() => props.onClose && props.onClose(null)}>cancel</Button>
           </div>
         </ModalBody>
       </ModalContent>

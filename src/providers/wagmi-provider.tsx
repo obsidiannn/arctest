@@ -29,7 +29,7 @@ function Provider({ children }: Readonly<{ children: ReactNode }>) {
       console.log('get Event', value);
       toast(value);
     });
-  }, []);
+  }, [toast]);
 
   return (
     <WagmiProviderComponent config={WagmiConfig}>

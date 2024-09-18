@@ -15,6 +15,8 @@ import routes from './routes';
 import fileRoute from './routes/file';
 import userRoute from './routes/user';
 
+// import { graphqlUserRoute } from './routes/graphql-route';
+
 dotenv.config();
 
 const { name, version } = require('../../package.json');
@@ -32,6 +34,7 @@ router.use('/api/sys', routes);
 router.use('/api/user', userRoute);
 router.use('/api/file', fileRoute);
 
+// router.all('/graphql', graphqlUserRoute)
 app.use(router);
 
 // 全局异常处理
